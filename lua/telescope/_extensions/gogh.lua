@@ -76,6 +76,25 @@ local function gen_from_gogh(opts)
   end
 end
 
+local function merge_table(base, ext)
+  local table = {}
+  if base then
+    for key, value in next, base do
+      table[key] = value
+    end
+  end
+  for key, value in next, ext do
+    table[key] = value
+  end
+  return table
+end
+
+local config = {
+  bin = 'gogh',
+  tail_path = false,
+  shorten_path = true,
+}
+
 M.list = function(opts)
   opts = merge_table(config, opts or {})
   opts.cwd = utils.get_lazy_default(opts.cwd, vim.fn.getcwd)
@@ -84,7 +103,7 @@ M.list = function(opts)
   pickers.new(opts, {
     prompt_title = 'Repositories managed by gogh',
     finder = finders.new_oneshot_job(
-      {opts.bin, 'list'},
+      {opts.bin, 'list', '--format', 'full'},
       opts
     ),
     previewer = previewers.new_termopen_previewer{
@@ -132,23 +151,6 @@ M.list = function(opts)
     end,
   }):find()
 end
-
-local function merge_table(base, ext)
-  local table = {}
-  for key, value in next, base do
-    table[key] = value
-  end
-  for key, value in next, ext do
-    table[key] = value
-  end
-  return table
-end
-
-local config = {
-  bin = 'gogh',
-  tail_path = false,
-  shorten_path = true,
-}
 
 return require('telescope').register_extension{
   setup = function(ext_config)
