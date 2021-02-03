@@ -157,6 +157,7 @@ return require('telescope').register_extension{
     config = merge_table(config, ext_config)
   end,
   exports = {
+    gogh = M.list,
     list = M.list
   },
 }
