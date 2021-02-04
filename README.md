@@ -27,6 +27,12 @@ require('telescope').setup {
       bin = 'gogh',
       tail_path = false,
       shorten_path = true,
+      keys = {
+        open = 'default', -- as <CR>, open selected project in git-files
+        cd   = '<c-g>',
+        lcd  = '<c-l>',
+        tcd  = '<c-t>',
+      }
     }
   },
 }
@@ -48,6 +54,11 @@ Call `pathshorten()` for each path.
 
 Default value: `true`
 
+### `keys`
+
+It can change behaviors in telescope-prompt.
+Place `<behave> = <key>` in their.
+
 ## Usage
 
 ### list
@@ -57,12 +68,14 @@ Default value: `true`
 Running `gogh list` and list repositories' paths.
 In default, it does actions below when you input keys.
 
-| key              | action               |
-|------------------|----------------------|
-| `<CR>` (edit)    | `builtin.git_files`  |
-| `<C-x>` (split)  | `:chdir` to the dir  |
-| `<C-v>` (vsplit) | `:lchdir` to the dir |
-| `<C-t>` (tabnew) | `:tchdir` to the dir |
+| key      | action               |
+|----------|----------------------|
+| `<CR>`   | `builtin.git_files`  |
+| `<C-g>`  | `:chdir` to the dir  |
+| `<C-l>`  | `:lchdir` to the dir |
+| `<C-t>`  | `:tchdir` to the dir |
+
+We can change the behavior in config.keys. See [#Configurations](#Configurations)
 
 ### options
 

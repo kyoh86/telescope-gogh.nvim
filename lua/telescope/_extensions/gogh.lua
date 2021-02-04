@@ -7,10 +7,14 @@ local path = require'telescope.path'
 local pickers = require'telescope.pickers'
 local previewers = require'telescope.previewers'
 local utils = require'telescope.utils'
+local gogh_a = require'telescope._extensions.gogh_actions'
+local gogh_c = require'telescope._extensions.gogh_config'
 
 local os_home = vim.loop.os_homedir()
 
 local M = {}
+
+local config = gogh_c.default()
 
 local function is_readable(filepath)
   local fd = vim.loop.fs_open(filepath, 'r', 438)
@@ -76,27 +80,8 @@ local function gen_from_gogh(opts)
   end
 end
 
-local function merge_table(base, ext)
-  local table = {}
-  if base then
-    for key, value in next, base do
-      table[key] = value
-    end
-  end
-  for key, value in next, ext do
-    table[key] = value
-  end
-  return table
-end
-
-local config = {
-  bin = 'gogh',
-  tail_path = false,
-  shorten_path = true,
-}
-
 M.list = function(opts)
-  opts = merge_table(config, opts or {})
+  opts = gogh_c.merge(config, opts or {})
   opts.cwd = utils.get_lazy_default(opts.cwd, vim.fn.getcwd)
   opts.entry_maker = utils.get_lazy_default(opts.entry_maker, gen_from_gogh, opts)
 
@@ -129,24 +114,18 @@ M.list = function(opts)
       end,
     },
     sorter = conf.file_sorter(opts),
-    attach_mappings = function(prompt_bufnr)
-      actions._goto_file_selection:replace(function(_, cmd)
-        local entry = actions.get_selected_entry()
-        actions.close(prompt_bufnr)
-        local dir = from_entry.path(entry)
-        if cmd == 'edit' then
-          require'telescope.builtin'.git_files{cwd = dir}
-        elseif cmd == 'new' then
-          vim.cmd('cd '..dir)
-          print('chdir to '..dir)
-        elseif cmd == 'vnew' then
-          vim.cmd('lcd '..dir)
-          print('lchdir to '..dir)
-        elseif cmd == 'tabedit' then
-          vim.cmd('tcd '..dir)
-          print('tchdir to '..dir)
+    attach_mappings = function(_,map)
+      ckeys = config['keys']
+      for op, key in next, ckeys do
+        act = gogh_a[op]
+        if key ~= nil then
+          if key == 'default' then
+            actions.goto_file_selection_edit:replace(act)
+          else
+            map('i', key, act)
+          end
         end
-      end)
+      end
       return true
     end,
   }):find()
@@ -154,7 +133,7 @@ end
 
 return require('telescope').register_extension{
   setup = function(ext_config)
-    config = merge_table(config, ext_config)
+    config = gogh_c.merge(config, ext_config)
   end,
   exports = {
     gogh = M.list,
