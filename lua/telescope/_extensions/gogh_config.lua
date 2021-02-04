@@ -9,7 +9,6 @@ local function merge_config(base, ext)
 
   for key, value in next, ext do
     old = table[key]
-    print(key, old, value)
     if type(old) == 'table' and type(value) == 'table' then
       table[key] = merge_config(old, value)
     else
