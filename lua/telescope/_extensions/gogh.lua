@@ -120,7 +120,7 @@ M.list = function(opts)
         act = gogh_a[op]
         if key ~= nil then
           if key == 'default' then
-            actions.goto_file_selection_edit:replace(act)
+            actions.select_default:replace(act)
           else
             map('i', key, act)
           end
