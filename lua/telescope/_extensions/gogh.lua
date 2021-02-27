@@ -88,7 +88,7 @@ M.list = function(opts)
   pickers.new(opts, {
     prompt_title = 'Repositories managed by gogh',
     finder = finders.new_oneshot_job(
-      {opts.bin, 'list', '--format', 'full'},
+      {opts.bin, 'list', '--format', 'full-file-path'},
       opts
     ),
     previewer = previewers.new_termopen_previewer{
