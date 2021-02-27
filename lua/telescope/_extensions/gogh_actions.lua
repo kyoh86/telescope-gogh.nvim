@@ -15,6 +15,13 @@ A.open = function(prompt_bufnr)
   require'telescope.builtin'.git_files{cwd = dir}
 end
 
+-- browse the target repository
+A.browse = function(prompt_bufnr)
+  local entry = actions.get_selected_entry(prompt_bufnr)
+  actions.close(prompt_bufnr)
+  vim.fn['openbrowser#open'](entry.url)
+end
+
 -- global chdir
 A.cd = function(prompt_bufnr)
   local dir = close_telescope_prompt(prompt_bufnr)

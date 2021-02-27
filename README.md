@@ -6,9 +6,10 @@
 
 ```lua
 use{
-  'nvim-telescope/telescope.nvim',
+  'nvim-telescope/telescope-gogh.nvim',
   requires = {
-    'nvim-telescope/telescope-gogh.nvim',
+    'nvim-telescope/telescope.nvim',
+    'tyru/open-browser.vim',
   },
   config = function()
     require'telescope'.load_extension'gogh'
@@ -28,10 +29,11 @@ require('telescope').setup {
       tail_path = false,
       shorten_path = true,
       keys = {
-        open = 'default', -- as <CR>, open selected project in git-files
-        cd   = '<c-g>',
-        lcd  = '<c-l>',
-        tcd  = '<c-t>',
+        open   = 'default', -- as <CR>, open selected project in git-files
+        cd     = '<c-g>',
+        lcd    = '<c-l>',
+        tcd    = '<c-t>',
+        browse = '<c-o>',
       }
     }
   },
@@ -68,12 +70,13 @@ Place `<behave> = <key>` in their.
 Running `gogh list` and list repositories' paths.
 In default, it does actions below when you input keys.
 
-| key      | action               |
-|----------|----------------------|
-| `<CR>`   | `builtin.git_files`  |
-| `<C-g>`  | `:chdir` to the dir  |
-| `<C-l>`  | `:lchdir` to the dir |
-| `<C-t>`  | `:tchdir` to the dir |
+| key      | action                   |
+|----------|--------------------------|
+| `<CR>`   | `builtin.git_files`      |
+| `<C-g>`  | `:chdir` to the dir      |
+| `<C-l>`  | `:lchdir` to the dir     |
+| `<C-t>`  | `:tchdir` to the dir     |
+| `<C-o>`  | Browse target repositroy |
 
 We can change the behavior in config.keys. See [#Configurations](#Configurations)
 

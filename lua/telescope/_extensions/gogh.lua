@@ -71,10 +71,12 @@ local function gen_from_gogh(opts)
   end
 
   return function(line)
+    local entry = vim.fn.json_decode(line)
     return {
-      value = line,
+      value = entry.fullFilePath,
       ordinal = line,
-      path = line,
+      url = entry.url,
+      path = entry.fullFilePath,
       display = make_display,
     }
   end
@@ -85,12 +87,15 @@ M.list = function(opts)
   opts.cwd = utils.get_lazy_default(opts.cwd, vim.fn.getcwd)
   opts.entry_maker = utils.get_lazy_default(opts.entry_maker, gen_from_gogh, opts)
 
+  local results = utils.get_os_command_output({
+    opts.bin, 'list', '--format', 'json',
+  }, opts.cwd)
   pickers.new(opts, {
     prompt_title = 'Repositories managed by gogh',
-    finder = finders.new_oneshot_job(
-      {opts.bin, 'list', '--format', 'full-file-path'},
-      opts
-    ),
+    finder = finders.new_table {
+      results = results,
+      entry_maker = opts.entry_maker,
+    },
     previewer = previewers.new_termopen_previewer{
       get_command = function(entry)
         local dir = from_entry.path(entry)

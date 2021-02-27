@@ -26,10 +26,11 @@ C.default = function()
     tail_path = false,
     shorten_path = true,
     keys = {
-      open = 'default',
-      cd   = '<c-g>',
-      lcd  = '<c-l>',
-      tcd  = '<c-t>',
+      open   = 'default',
+      cd     = '<c-g>',
+      lcd    = '<c-l>',
+      tcd    = '<c-t>',
+      browse = '<c-o>',
     },
   }
 end
