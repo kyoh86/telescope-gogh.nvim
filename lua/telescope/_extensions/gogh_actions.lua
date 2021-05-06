@@ -43,4 +43,12 @@ A.tcd = function(prompt_bufnr)
   print('chdir tab to ' .. dir)
 end
 
+-- get repository
+A.get = function(prompt_bufnr)
+  local entry = actions.get_selected_entry(prompt_bufnr)
+  actions.close(prompt_bufnr)
+  print('getting ' .. entry.url)
+  vim.cmd('!gogh get '  .. entry.rel)
+end
+
 return A

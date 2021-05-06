@@ -29,11 +29,17 @@ require('telescope').setup {
       tail_path = false,
       shorten_path = true,
       keys = {
-        open   = 'default', -- as <CR>, open selected project in git-files
-        cd     = '<c-g>',
-        lcd    = '<c-l>',
-        tcd    = '<c-t>',
-        browse = '<c-o>',
+        list = {
+          open   = 'default', -- as <CR>, open selected project in git-files
+          cd     = '<c-g>',
+          lcd    = '<c-l>',
+          tcd    = '<c-t>',
+          browse = '<c-o>',
+        },
+        repos = {
+          browse = 'default',
+          get    = '<c-g>',
+        },
       }
     }
   },
@@ -59,7 +65,7 @@ Default value: `true`
 ### `keys`
 
 It can change behaviors in telescope-prompt.
-Place `<behave> = <key>` in their.
+Place `<subcommand> = { <behavior> = <key> }` in their.
 
 ## Usage
 
@@ -77,6 +83,20 @@ In default, it does actions below when you input keys.
 | `<C-l>`  | `:lchdir` to the dir     |
 | `<C-t>`  | `:tchdir` to the dir     |
 | `<C-o>`  | Browse target repositroy |
+
+We can change the behavior in config.keys. See [#Configurations](#Configurations)
+
+### repos
+
+`:Telescope gogh repos`
+
+Running `gogh repos` and list repositories' URLs.
+In default, it does actions below when you input keys.
+
+| key      | action                   |
+|----------|--------------------------|
+| `<CR>`   | Browse target repositroy |
+| `<C-g>`  | Exec `gogh get`          |
 
 We can change the behavior in config.keys. See [#Configurations](#Configurations)
 

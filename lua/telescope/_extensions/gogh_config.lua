@@ -26,11 +26,17 @@ C.default = function()
     tail_path = false,
     shorten_path = true,
     keys = {
-      open   = 'default',
-      cd     = '<c-g>',
-      lcd    = '<c-l>',
-      tcd    = '<c-t>',
-      browse = '<c-o>',
+      list = {
+        open   = 'default',
+        cd     = '<c-g>',
+        lcd    = '<c-l>',
+        tcd    = '<c-t>',
+        browse = '<c-o>',
+      },
+      repos = {
+        browse = 'default',
+        get    = '<c-g>',
+      },
     },
   }
 end
