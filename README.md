@@ -9,6 +9,7 @@ use{
   'nvim-telescope/telescope-gogh.nvim',
   requires = {
     'nvim-telescope/telescope.nvim',
+    'nvim-lua/plenary.nvim',
     'tyru/open-browser.vim',
   },
   config = function()
