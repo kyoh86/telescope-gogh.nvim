@@ -3,7 +3,7 @@ local conf = require "telescope.config".values
 local entry_display = require "telescope.pickers.entry_display"
 local finders = require "telescope.finders"
 local from_entry = require "telescope.from_entry"
-local path = require "plenary.path"
+local Path = require "plenary.path"
 local pickers = require "telescope.pickers"
 local previewers = require "telescope.previewers"
 local utils = require "telescope.utils"
@@ -22,7 +22,9 @@ end
 
 local function search_readme(dir)
   for _, name in pairs {"README", "README.md", "README.markdown"} do
-    local filepath = dir .. path.separator .. name
+    print(dir)
+    print(name)
+    local filepath = Path:new(dir, name).filename
     if is_readable(filepath) then
       return filepath
     end
@@ -31,7 +33,8 @@ local function search_readme(dir)
 end
 
 local function search_doc(dir)
-  local doc_path = vim.fn.join({dir, "doc", "**", "*.txt"}, path.separator)
+  print(dir)
+  local doc_path = Path:new(dir, "doc", "**", "*.txt").filename
   local maybe_doc = vim.split(vim.fn.glob(doc_path), "\n")
   for _, filepath in pairs(maybe_doc) do
     if is_readable(filepath) then
@@ -57,9 +60,9 @@ local function entry_maker(opts)
     elseif opts.shorten_path then
       dir = utils.path_shorten(original)
     else
-      dir = path.make_relative(original, opts.cwd)
+      dir = Path:new(original):make_relative(opts.cwd)
       if vim.startswith(dir, os_home) then
-        dir = "~/" .. path.make_relative(dir, os_home)
+        dir = "~/" .. Path:new(dir):make_relative(os_home)
       elseif dir ~= original then
         dir = "./" .. dir
       end
