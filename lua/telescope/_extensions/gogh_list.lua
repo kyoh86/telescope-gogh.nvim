@@ -22,8 +22,6 @@ end
 
 local function search_readme(dir)
   for _, name in pairs {"README", "README.md", "README.markdown"} do
-    print(dir)
-    print(name)
     local filepath = Path:new(dir, name).filename
     if is_readable(filepath) then
       return filepath
@@ -33,7 +31,6 @@ local function search_readme(dir)
 end
 
 local function search_doc(dir)
-  print(dir)
   local doc_path = Path:new(dir, "doc", "**", "*.txt").filename
   local maybe_doc = vim.split(vim.fn.glob(doc_path), "\n")
   for _, filepath in pairs(maybe_doc) do
