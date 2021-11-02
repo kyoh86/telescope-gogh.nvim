@@ -1,10 +1,11 @@
 local actions = require'telescope.actions'
+local actions_state = require'telescope.actions.state'
 local from_entry = require'telescope.from_entry'
 
 local A = {}
 
 local function close_telescope_prompt(prompt_bufnr)
-  local entry = actions.get_selected_entry(prompt_bufnr)
+  local entry = actions_state.get_selected_entry(prompt_bufnr)
   actions.close(prompt_bufnr)
   return from_entry.path(entry)
 end
@@ -17,7 +18,7 @@ end
 
 -- browse the target repository
 A.browse = function(prompt_bufnr)
-  local entry = actions.get_selected_entry(prompt_bufnr)
+  local entry = actions_state.get_selected_entry(prompt_bufnr)
   actions.close(prompt_bufnr)
   vim.fn['openbrowser#open'](entry.url)
 end
@@ -45,7 +46,7 @@ end
 
 -- get repository
 A.get = function(prompt_bufnr)
-  local entry = actions.get_selected_entry(prompt_bufnr)
+  local entry = actions_state.get_selected_entry(prompt_bufnr)
   actions.close(prompt_bufnr)
   print('getting ' .. entry.url)
   vim.cmd('!gogh get '  .. entry.rel)
