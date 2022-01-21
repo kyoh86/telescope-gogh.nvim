@@ -1,13 +1,13 @@
-local actions = require "telescope.actions"
-local conf = require "telescope.config".values
-local entry_display = require "telescope.pickers.entry_display"
-local finders = require "telescope.finders"
-local from_entry = require "telescope.from_entry"
-local Path = require "plenary.path"
-local pickers = require "telescope.pickers"
-local previewers = require "telescope.previewers"
-local utils = require "telescope.utils"
-local gogh_a = require "telescope._extensions.gogh_actions"
+local actions = require("telescope.actions")
+local conf = require("telescope.config").values
+local entry_display = require("telescope.pickers.entry_display")
+local finders = require("telescope.finders")
+local from_entry = require("telescope.from_entry")
+local Path = require("plenary.path")
+local pickers = require("telescope.pickers")
+local previewers = require("telescope.previewers")
+local utils = require("telescope.utils")
+local gogh_a = require("telescope._extensions.gogh_actions")
 
 local M = {}
 
@@ -21,7 +21,7 @@ local function is_readable(filepath)
 end
 
 local function search_readme(dir)
-  for _, name in pairs {"README", "README.md", "README.markdown"} do
+  for _, name in pairs({ "README", "README.md", "README.markdown" }) do
     local filepath = Path:new(dir, name).filename
     if is_readable(filepath) then
       return filepath
@@ -42,10 +42,9 @@ local function search_doc(dir)
 end
 
 local function entry_maker(opts)
-  local displayer =
-    entry_display.create {
-    items = {{}}
-  }
+  local displayer = entry_display.create({
+    items = { {} },
+  })
 
   local os_home = vim.loop.os_homedir()
 
@@ -65,7 +64,7 @@ local function entry_maker(opts)
       end
     end
 
-    return displayer {dir}
+    return displayer({ dir })
   end
 
   return function(line)
@@ -75,7 +74,7 @@ local function entry_maker(opts)
       ordinal = line,
       url = entry.url,
       path = entry.fullFilePath,
-      display = make_display
+      display = make_display,
     }
   end
 end
@@ -84,63 +83,56 @@ M.list = function(opts)
   opts.cwd = utils.get_lazy_default(opts.cwd, vim.fn.getcwd)
   opts.entry_maker = utils.get_lazy_default(opts.entry_maker, entry_maker, opts)
 
-  local results =
-    utils.get_os_command_output(
-    {
-      opts.bin,
-      "list",
-      "--format",
-      "json"
-    },
-    opts.cwd
-  )
-  pickers.new(
-    opts,
-    {
-      prompt_title = "Repositories managed by gogh",
-      finder = finders.new_table {
-        results = results,
-        entry_maker = opts.entry_maker
-      },
-      previewer = previewers.new_termopen_previewer {
-        get_command = function(entry)
-          local dir = from_entry.path(entry)
-          local doc = search_readme(dir)
-          local is_markdown
-          if doc then
-            is_markdown = true
+  local results = utils.get_os_command_output({
+    opts.bin,
+    "list",
+    "--format",
+    "json",
+  }, opts.cwd)
+  pickers.new(opts, {
+    prompt_title = "Repositories managed by gogh",
+    finder = finders.new_table({
+      results = results,
+      entry_maker = opts.entry_maker,
+    }),
+    previewer = previewers.new_termopen_previewer({
+      get_command = function(entry)
+        local dir = from_entry.path(entry)
+        local doc = search_readme(dir)
+        local is_markdown
+        if doc then
+          is_markdown = true
+        else
+          -- TODO: doc may be previewed in a plain text. Can I use syntax highlight?
+          doc = search_doc(dir)
+        end
+        if doc then
+          if is_markdown and vim.fn.executable("glow") == 1 then
+            return { "glow", doc }
+          elseif vim.fn.executable("bat") == 1 then
+            return { "bat", "--style", "header,grid", doc }
+          end
+          return { "cat", doc }
+        end
+        return { "echo", "" }
+      end,
+    }),
+    sorter = conf.file_sorter(opts),
+    attach_mappings = function(_, map)
+      ckeys = opts["keys"]["list"]
+      for op, key in next, ckeys do
+        act = gogh_a[op]
+        if key ~= nil then
+          if key == "default" then
+            actions.select_default:replace(act)
           else
-            -- TODO: doc may be previewed in a plain text. Can I use syntax highlight?
-            doc = search_doc(dir)
-          end
-          if doc then
-            if is_markdown and vim.fn.executable "glow" == 1 then
-              return {"glow", doc}
-            elseif vim.fn.executable "bat" == 1 then
-              return {"bat", "--style", "header,grid", doc}
-            end
-            return {"cat", doc}
-          end
-          return {"echo", ""}
-        end
-      },
-      sorter = conf.file_sorter(opts),
-      attach_mappings = function(_, map)
-        ckeys = opts["keys"]["list"]
-        for op, key in next, ckeys do
-          act = gogh_a[op]
-          if key ~= nil then
-            if key == "default" then
-              actions.select_default:replace(act)
-            else
-              map("i", key, act)
-            end
+            map("i", key, act)
           end
         end
-        return true
       end
-    }
-  ):find()
+      return true
+    end,
+  }):find()
 end
 
 return M

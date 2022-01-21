@@ -1,11 +1,11 @@
-local actions = require "telescope.actions"
-local conf = require "telescope.config".values
-local entry_display = require "telescope.pickers.entry_display"
-local finders = require "telescope.finders"
-local pickers = require "telescope.pickers"
-local utils = require "telescope.utils"
-local gogh_a = require "telescope._extensions.gogh_actions"
-local strings = require "plenary.strings"
+local actions = require("telescope.actions")
+local conf = require("telescope.config").values
+local entry_display = require("telescope.pickers.entry_display")
+local finders = require("telescope.finders")
+local pickers = require("telescope.pickers")
+local utils = require("telescope.utils")
+local gogh_a = require("telescope._extensions.gogh_actions")
+local strings = require("plenary.strings")
 
 local M = {}
 
@@ -15,7 +15,7 @@ M.repos = function(opts)
   local results = {}
   local widths = {
     rel = 0,
-    attr = 0
+    attr = 0,
   }
 
   local parse_line = function(line)
@@ -38,18 +38,14 @@ M.repos = function(opts)
     table.insert(results, entry)
   end
 
-  local output =
-    utils.get_os_command_output(
-    {
-      opts.bin,
-      "repos",
-      "--format",
-      "json",
-      "--limit",
-      "0"
-    },
-    opts.cwd
-  )
+  local output = utils.get_os_command_output({
+    opts.bin,
+    "repos",
+    "--format",
+    "json",
+    "--limit",
+    "0",
+  }, opts.cwd)
   for _, line in ipairs(output) do
     parse_line(line)
   end
@@ -57,54 +53,50 @@ M.repos = function(opts)
     return
   end
 
-  local displayer =
-    entry_display.create {
+  local displayer = entry_display.create({
     separator = " ",
     items = {
-      {width = widths.rel},
-      {width = widths.attr},
-      {remaing = true}
-    }
-  }
+      { width = widths.rel },
+      { width = widths.attr },
+      { remaing = true },
+    },
+  })
 
   local make_display = function(entry)
-    return displayer {
-      {entry.rel, "TelescopeResultsIdentifier"},
-      {entry.attr},
-      {entry.description}
-    }
+    return displayer({
+      { entry.rel, "TelescopeResultsIdentifier" },
+      { entry.attr },
+      { entry.description },
+    })
   end
 
-  pickers.new(
-    opts,
-    {
-      prompt_title = "Repositories on GitHub",
-      finder = finders.new_table {
-        results = results,
-        entry_maker = function(entry)
-          entry.value = entry.url
-          entry.ordinal = entry.url
-          entry.display = make_display
-          return entry
-        end
-      },
-      sorter = conf.file_sorter(opts),
-      attach_mappings = function(_, map)
-        ckeys = opts["keys"]["repos"]
-        for op, key in next, ckeys do
-          act = gogh_a[op]
-          if key ~= nil then
-            if key == "default" then
-              actions.select_default:replace(act)
-            else
-              map("i", key, act)
-            end
+  pickers.new(opts, {
+    prompt_title = "Repositories on GitHub",
+    finder = finders.new_table({
+      results = results,
+      entry_maker = function(entry)
+        entry.value = entry.url
+        entry.ordinal = entry.url
+        entry.display = make_display
+        return entry
+      end,
+    }),
+    sorter = conf.file_sorter(opts),
+    attach_mappings = function(_, map)
+      ckeys = opts["keys"]["repos"]
+      for op, key in next, ckeys do
+        act = gogh_a[op]
+        if key ~= nil then
+          if key == "default" then
+            actions.select_default:replace(act)
+          else
+            map("i", key, act)
           end
         end
-        return true
       end
-    }
-  ):find()
+      return true
+    end,
+  }):find()
 end
 
 return M
