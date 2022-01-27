@@ -24,7 +24,7 @@ C.default = function()
   return {
     bin = "gogh",
     tail_path = false,
-    shorten_path = true,
+    shorten_path = false,
     keys = {
       list = {
         open = "default",
