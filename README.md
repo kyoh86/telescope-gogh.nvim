@@ -1,5 +1,7 @@
 # telescope-gogh.nvim
 
+NOTE: I'm no longer using telescope. So active development has decelerated on the repository.
+
 `telescope-gogh` is an extension for [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) that provides its users with operating [kyoh86/gogh](https://github.com/kyoh86/gogh).
 
 ## Installation
